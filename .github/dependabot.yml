@@ -1,5 +1,8 @@
-package-ecosystem: "npm" # Specify the package manager (e.g., npm for Node.js) 
-directory: "/" # The directory where your package.json is located 
-schedule: interval: "weekly" # Check for updates weekly 
-day: "monday" # Specify the day of the week for updates 
-open-pull-requests-limit: 10 # Limit the number of open pull requests. 
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "fix(deps):"
