@@ -6,3 +6,5 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "fix(deps):"
+    target-branch: "develop"
+    rebase-strategy: auto
