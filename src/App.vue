@@ -15,7 +15,7 @@ import Footer from './components/footer.vue'
   <Services />
   <GraphicDesign />
   <Photography />
-  <Testimonials />
+  <!-- <Testimonials /> -->
   <Gallery />
   <Footer />
 </template>
