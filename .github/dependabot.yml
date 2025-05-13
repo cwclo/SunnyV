@@ -3,8 +3,12 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+      day: "monday"
     commit-message:
       prefix: "fix(deps):"
     target-branch: "develop"
     rebase-strategy: auto
+    labels:
+      - "dependencies"
+

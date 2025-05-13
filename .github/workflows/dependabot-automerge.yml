@@ -1,26 +1,53 @@
-name: Enable auto-merge for Dependabot PRs
+name: Auto-merge Dependabot PRs
 
 on:
   pull_request:
     types:
-      - opened
-      - reopened
-      - synchronize
       - labeled
+      - synchronize
+      - opened
       - ready_for_review
-      - edited
 
 permissions:
   contents: write
   pull-requests: write
+  statuses: read
+  checks: read
 
 jobs:
-  enable-auto-merge:
+  automerge:
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
+
     steps:
-      - name: Enable auto-merge
-        if: github.event.pull_request.user.login == 'dependabot[bot]'
-        uses: peter-evans/enable-pull-request-automerge@v3
+      - uses: actions/github-script@v7
         with:
-          merge-method: squash
-          pull-request-number: ${{ github.event.pull_request.number }}
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+
+            const headSha = pr.data.head.sha;
+            const mergeable = pr.data.mergeable;
+
+            const status = await github.rest.repos.getCombinedStatusForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: headSha
+            });
+
+            const allChecksPass = status.data.state === "success";
+
+            if (mergeable && allChecksPass) {
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.data.number,
+                merge_method: "squash"
+              });
+              console.log("✅ Auto-merged by Dependabot script.");
+            } else {
+              console.log("⛔ Not safe to merge. Skipping.");
+            }
